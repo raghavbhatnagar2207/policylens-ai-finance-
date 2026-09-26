@@ -48,7 +48,9 @@ class ProductionConfig(Config):
     DEBUG = False
     _raw_db = os.getenv('DATABASE_URL', '')
     if _raw_db and _raw_db.startswith('postgres://'):
-        _raw_db = _raw_db.replace('postgres://', 'postgresql://', 1)
+        _raw_db = _raw_db.replace('postgres://', 'postgresql+psycopg2://', 1)
+    elif _raw_db and _raw_db.startswith('postgresql://') and not _raw_db.startswith('postgresql+'):
+        _raw_db = _raw_db.replace('postgresql://', 'postgresql+psycopg2://', 1)
     SQLALCHEMY_DATABASE_URI = _raw_db
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')
