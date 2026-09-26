@@ -1,0 +1,5 @@
+{
+  "name": "policylens-ai-workspace",
+  "private": true,
+  "scripts": { "install:all": "npm --prefix frontend install", "dev": "npm --prefix frontend run dev", "build": "npm --prefix frontend run build" }
+}

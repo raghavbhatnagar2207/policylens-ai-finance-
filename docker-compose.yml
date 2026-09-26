@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: policylens-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-policylens}
+      POSTGRES_USER: ${POSTGRES_USER:-policylens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD environment variable must be set}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-policylens} -d ${POSTGRES_DB:-policylens}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - policylens-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: policylens-backend
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-policylens}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD environment variable must be set}@db:5432/${POSTGRES_DB:-policylens}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable must be set (minimum 32 characters)}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://127.0.0.1}
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_reports:/app/reports
+      - backend_artifacts:/app/app/ml/artifacts
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - policylens-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: policylens-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - policylens-net
+
+volumes:
+  postgres_data:
+  backend_uploads:
+  backend_reports:
+  backend_artifacts:
+
+networks:
+  policylens-net:
+    driver: bridge

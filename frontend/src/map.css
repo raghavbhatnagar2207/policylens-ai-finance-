@@ -1,0 +1,127 @@
+/* ============================================
+   Regional Analysis — Map & Detail Panel
+   ============================================ */
+
+.regional-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+  gap: 14px;
+}
+
+.map-shell {
+  height: 540px;
+  position: relative;
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--border, #DDDCD6);
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+}
+
+.leaflet-map { height: 100%; width: 100%; z-index: 0; }
+.leaflet-container { font-family: var(--font, 'Inter', sans-serif); }
+
+.map-key {
+  position: absolute;
+  z-index: 500;
+  bottom: 14px;
+  left: 14px;
+  background: var(--surface, #FFFFFF);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text-secondary, #69737A);
+}
+.map-key span { display: flex; align-items: center; gap: 4px; }
+.map-key i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.map-key i.critical { background: #dc2626; }
+.map-key i.high     { background: #ea580c; }
+.map-key i.medium   { background: #d97706; }
+.map-key i.low      { background: #16a34a; }
+
+/* Custom Map Risk Tooltips */
+.leaflet-tooltip.risk-map-tooltip {
+  background: #FFFFFF !important;
+  color: #1F2937 !important;
+  border: 1px solid #D1D5DB !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  padding: 4px 9px !important;
+  font-family: var(--font, 'Inter', sans-serif) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  pointer-events: none;
+}
+
+.leaflet-tooltip-top:before {
+  border-top-color: #D1D5DB !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+  border: 1px solid #D1D5DB !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* Region detail panel — neutral warm style, no dark navy */
+.region-detail {
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--border, #DDDCD6);
+  border-radius: var(--radius, 8px);
+  padding: 20px;
+  color: var(--text, #20282D);
+}
+.region-detail > small {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  color: var(--text-muted, #8E9399);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.region-detail .badge { margin-top: 4px; }
+.region-detail h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 10px 0 2px;
+  color: var(--text, #20282D);
+}
+.region-detail p {
+  color: var(--text-secondary, #69737A);
+  font-size: 13px;
+  line-height: 1.6;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light, #ECEAE4);
+}
+.region-detail > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light, #ECEAE4);
+  font-size: 13px;
+  color: var(--text-secondary, #69737A);
+}
+.region-detail > div b { color: var(--text, #20282D); }
+.region-detail .primary {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+@media (max-width: 850px) {
+  .regional-layout { grid-template-columns: 1fr; }
+  .map-shell { height: 400px; }
+}
