@@ -9,8 +9,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    preDeployCommand: "python scripts/seed.py"
-    startCommand: "gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 wsgi:app"
+    startCommand: "python scripts/seed.py && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 wsgi:app"
     healthCheckPath: /health
     envVars:
       - key: FLASK_ENV
