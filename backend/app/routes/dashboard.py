@@ -82,27 +82,38 @@ def summary():
         })
 
     # Monthly trend (from record dates) - PostgreSQL & SQLite compatible
-    dialect_name = db.session.bind.dialect.name if db.session.bind else 'sqlite'
-    if dialect_name == 'postgresql':
-        month_expr = func.to_char(FinancialRecord.date, 'YYYY-MM').label('month')
-    else:
-        month_expr = func.strftime('%Y-%m', FinancialRecord.date).label('month')
+    trends = []
+    try:
+        dialect_name = 'sqlite'
+        try:
+            dialect_name = db.engine.dialect.name
+        except Exception:
+            pass
 
-    monthly = db.session.query(
-        month_expr,
-        func.sum(FinancialRecord.allocation),
-        func.sum(FinancialRecord.utilization),
-        func.count(FinancialRecord.id),
-    ).filter(
-        FinancialRecord.date.isnot(None)
-    ).group_by(month_expr).order_by(month_expr).all()
+        if dialect_name == 'postgresql':
+            month_expr = func.to_char(FinancialRecord.date, 'YYYY-MM').label('month')
+        else:
+            month_expr = func.strftime('%Y-%m', FinancialRecord.date).label('month')
 
-    trends = [{
-        'month': row[0],
-        'allocation': float(row[1] or 0),
-        'utilization': float(row[2] or 0),
-        'records': row[3],
-    } for row in monthly]
+        monthly = db.session.query(
+            month_expr,
+            func.sum(FinancialRecord.allocation),
+            func.sum(FinancialRecord.utilization),
+            func.count(FinancialRecord.id),
+        ).filter(
+            FinancialRecord.date.isnot(None)
+        ).group_by(month_expr).order_by(month_expr).all()
+
+        trends = [{
+            'month': str(row[0]),
+            'allocation': float(row[1] or 0),
+            'utilization': float(row[2] or 0),
+            'records': row[3],
+        } for row in monthly]
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning("Failed to compute monthly trends: %s", e)
+        trends = []
 
     return success_response(data={
         'financial': {

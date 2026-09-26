@@ -94,16 +94,19 @@ export default function Dashboard() {
   const risk = data?.risk || {};
   const riskDist = risk.risk_distribution || {};
 
+  const totalAlloc = Number(fin.total_allocated) || 0;
+  const totalUtil = Number(fin.total_utilized) || 0;
+
   const kpis = [
     {
       title: 'Total allocation',
-      val: `₹${(fin.total_allocated / 1000).toFixed(2)}M`,
+      val: `₹${(totalAlloc / 1000).toFixed(2)}M`,
       sub: `${fin.record_count || 0} financial records`,
       icon: Coins,
     },
     {
       title: 'Total utilization',
-      val: `₹${(fin.total_utilized / 1000).toFixed(2)}M`,
+      val: `₹${(totalUtil / 1000).toFixed(2)}M`,
       sub: `${fin.utilization_pct || 0}% overall utilization`,
       icon: TrendingUp,
     },

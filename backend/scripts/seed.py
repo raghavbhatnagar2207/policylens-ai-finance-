@@ -36,8 +36,11 @@ def seed():
         except Exception:
             db.create_all()
 
-        if User.query.first():
-            print('Database already seeded. Skipping.')
+        user = User.query.first()
+        fin_record = FinancialRecord.query.first()
+
+        if user and fin_record:
+            print('Database already seeded with users and financial records. Skipping.')
             return
 
         print('Seeding database...')
@@ -45,26 +48,29 @@ def seed():
         # ---------------------------------------------------------------
         # Users
         # ---------------------------------------------------------------
-        users = [
-            User(name='Admin User', email='admin@policylens.demo',
-                 password_hash=generate_password_hash('Admin@1234'),
-                 role='Admin', language='en'),
-            User(name='Anshi Verma', email='anshi@policylens.demo',
-                 password_hash=generate_password_hash('Manager@1234'),
-                 role='Manager', language='en'),
-            User(name='Rajesh Kumar', email='rajesh@policylens.demo',
-                 password_hash=generate_password_hash('Analyst@1234'),
-                 role='Analyst', language='hi'),
-            User(name='Priya Singh', email='priya@policylens.demo',
-                 password_hash=generate_password_hash('Reviewer@1234'),
-                 role='Reviewer', language='en'),
-            User(name='Vikram Mehta', email='vikram@policylens.demo',
-                 password_hash=generate_password_hash('Auditor@1234'),
-                 role='Auditor', language='en'),
-        ]
-        db.session.add_all(users)
-        db.session.flush()
-        print(f'  Created {len(users)} users')
+        if not user:
+            users = [
+                User(name='Admin User', email='admin@policylens.demo',
+                     password_hash=generate_password_hash('Admin@1234'),
+                     role='Admin', language='en'),
+                User(name='Anshi Verma', email='anshi@policylens.demo',
+                     password_hash=generate_password_hash('Manager@1234'),
+                     role='Manager', language='en'),
+                User(name='Rajesh Kumar', email='rajesh@policylens.demo',
+                     password_hash=generate_password_hash('Analyst@1234'),
+                     role='Analyst', language='hi'),
+                User(name='Priya Singh', email='priya@policylens.demo',
+                     password_hash=generate_password_hash('Reviewer@1234'),
+                     role='Reviewer', language='en'),
+                User(name='Vikram Mehta', email='vikram@policylens.demo',
+                     password_hash=generate_password_hash('Auditor@1234'),
+                     role='Auditor', language='en'),
+            ]
+            db.session.add_all(users)
+            db.session.flush()
+            print(f'  Created {len(users)} users')
+        else:
+            users = User.query.all()
 
         # ---------------------------------------------------------------
         # Financial Records — realistic demo data across Western UP regions
