@@ -3,7 +3,12 @@
  * Handles authentication, errors, and response parsing.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+let rawBase = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+if (rawBase.endsWith('/')) rawBase = rawBase.slice(0, -1);
+if (!rawBase.endsWith('/api/v1') && rawBase.startsWith('http')) {
+  rawBase += '/api/v1';
+}
+const BASE_URL = rawBase;
 
 let accessToken = localStorage.getItem('pl_access_token');
 let refreshToken = localStorage.getItem('pl_refresh_token');

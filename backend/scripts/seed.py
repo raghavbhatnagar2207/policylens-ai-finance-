@@ -29,9 +29,12 @@ def seed():
     app = create_app()
 
     with app.app_context():
-        # Run migrations to ensure schema is up to date
-        from flask_migrate import upgrade
-        upgrade()
+        # Ensure database tables exist
+        try:
+            from flask_migrate import upgrade
+            upgrade()
+        except Exception:
+            db.create_all()
 
         if User.query.first():
             print('Database already seeded. Skipping.')

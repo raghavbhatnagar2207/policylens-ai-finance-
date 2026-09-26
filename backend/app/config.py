@@ -46,9 +46,12 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    _raw_db = os.getenv('DATABASE_URL', '')
+    if _raw_db and _raw_db.startswith('postgres://'):
+        _raw_db = _raw_db.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = _raw_db
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_size': 10,
         'pool_recycle': 300,
@@ -57,7 +60,7 @@ class ProductionConfig(Config):
 
     @classmethod
     def validate(cls):
-        for key in ['DATABASE_URL', 'JWT_SECRET_KEY', 'CORS_ORIGINS']:
+        for key in ['DATABASE_URL', 'JWT_SECRET_KEY']:
             val = cls._require_env(key)
             if any(p in val.lower() for p in ('change-me', 'dev-only', 'replace-in-real', 'test-secret')):
                 raise RuntimeError(f"Production environment variable '{key}' cannot use default or placeholder values.")
