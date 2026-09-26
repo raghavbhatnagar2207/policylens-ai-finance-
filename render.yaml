@@ -8,7 +8,8 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && python scripts/seed.py"
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    preDeployCommand: "python scripts/seed.py"
     startCommand: "gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 wsgi:app"
     healthCheckPath: /health
     envVars:
@@ -29,8 +30,6 @@ services:
   - type: web
     name: policylens-web
     runtime: static
-    region: oregon
-    plan: free
     rootDir: frontend
     buildCommand: "npm install && npm run build"
     staticPublishPath: dist
